@@ -4,11 +4,11 @@
             <a href="#" class="navbar-brand">My Vue </a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li v-for="(page, index) in pages" class="nav-item" :key="index">
-                    <a :href="page.link.url" :title="`This is the ${page.link.text} page`"
-                    @click.prevent="navLinkClick(index)" :class="{active: activePage == index}"
-                    class="nav-link" aria-current="page">
-                    {{ page.link.text }}
-                </a>
+                    <navbar-link
+                        :page="page"
+                        :isActive = "activePage === index"
+                        @click.prevent="navLinkClick(index)" 
+                    ></navbar-link>
                 </li>
             </ul>
             <form class="d-flex">
@@ -21,13 +21,20 @@
 </template>
 
 <script>
+import NavbarLink from './NavbarLink.vue'
 export default {
+    components: {
+        NavbarLink
+    },
+    created() {
+        this.getThemeSetting()
+    },
     props: ['pages', 'activePage', 'navLinkClick'],
     data() {
-                return {
-                    theme: 'light',
-                }
-            },
+        return {
+            theme: 'light',
+        }
+    },
     methods: {
         changeTheme() {
             let theme = 'light'
@@ -35,6 +42,17 @@ export default {
             if (this.theme == 'light') { theme = 'dark' }
             
             this.theme = theme
+            this.storeThemeSetting()
+        },
+        storeThemeSetting() {
+            localStorage.setItem('theme', this.theme)
+        },
+        getThemeSetting() {
+            let theme = localStorage.getItem('theme', this.theme)
+
+            if (theme) {
+                this.theme = theme;
+            }
         }
     }
 }
